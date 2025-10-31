@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="PT">
+    <head>
+        <link rel="stylesheet" href="style.css">
+        <meta charset=UTF-8>
+        <title>Temporario</title>
+    </head>
+    <body id="fundo">
+
+        <div class="MenuLateral">
+            <img/>
+            <button onclick="Instrucoes()">Instruções</button>
+            <button onclick="Classifcacao()">Classificações</button>
+            <button onclick="Home()">Home</button>
+        </div>
+
+        <div class="login">
+            <p class="login1">Sign in</p>
+
+            <input type="text" placeholder="Nome de Utilizador" value="nome" name="uname" required>
+            <input type="password" placeholder="Inserir Password" name="psw" required>
+
+            <button class="button" onclick="Menu1()">Login</button>
+            <span class="psw">Forgot <a href="#">password?</a></span>
+        </div>
+
+        <div class="Menu">
+            <button onclick="Escolhe()">PLAYER VS PC</button>
+            <button onclick="">PLAYER VS PLAYER</button>
+        </div>
+
+        <div class="Escolher">
+
+            <p class="tamanho">Escolhe o tamanho do tabuleiro</p>
+            <input type="range" id="tam" name="tam" min="0" max="5">
+            <label for="tam"></label>
+
+            <p class="tamanho">Escolhe a dificuldade</p>
+            <input type="radio" id="facil" name="level">
+            <label for="facil"><span></span>Fácil</label>
+
+            <input type="radio" id="medio" name="level" checked="checked"/>
+			<label for="medio"><span></span>Médio</label>
+
+			<input type="radio" id="dificil" name="level"/>
+			<label for="dificil"><span></span>Dificil</label><br>
+
+            <button class="button2" onclick="play1()">Play!</button>
+        </div>
+
+        <div class="Instrucoes">
+            <p class="int">Instruções</p>
+                <p class="int">-Temos que por aqui as Instruções depois</p>
+                <button onclick="FecharInsts()">Close</button>
+        </div>
+        <div class="Classifcacao">
+            <br><p class="int">Rodrigo: 50 pontos</p>
+            <p class="int">Catarina: 40 pontos</p>
+            <p class="int">Gonçalo: 30 pontos</p>
+            <button onclick="FecharClasf()">Close</button>
+        </div>
+        <div class="mensagens"></div>
+        
+
+
+        <script src="java.js"></script>
+    </body>
+</html>

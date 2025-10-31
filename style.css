@@ -1,0 +1,188 @@
+#fundo{
+    background-color: aqua;
+}
+
+.MenuLateral button{
+    visibility: visible;
+    background-color: #008cba;
+    border : 1px solid white;
+    color: white;
+    width: 150px;
+    height: 75px;
+    cursor: pointer;
+    display: none;
+}
+
+.MenuLateral{
+    display: flex;
+}
+
+.Menu1 {
+  display: none;
+  background-color: black;
+  width: 200px;
+  height: 300px;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 10px;
+}
+
+.login{
+    background-color: mediumvioletred;
+    width: 500px;
+    height: 300px;
+    margin-top: 20px;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+    border: 1px solid black;
+    z-index: 1;
+}
+
+p.login1 {
+    margin-top: 5px;
+    margin-bottom: 15px;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 30px;
+    text-align: center;
+}
+
+input[type=text], [type=password]{
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    height: 33px;
+    width: 300px;
+    margin-top: 10px;
+}
+
+.button{
+    background-color: blueviolet;
+    color: black;
+    padding: 15px 30px;
+    text-align: center;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    opacity: 0.6;
+    font-size: 16px;
+    width: 350px;
+    margin-top: 25px;
+    border: none;
+    border-radius: 8px;
+}
+
+span.psw {
+    color: black;
+    float: left;
+    margin-left: 3px;
+    padding-top: 16px;
+}
+p.int{
+    color: white;
+}
+.Instrucoes {
+    background-color: #008cba;
+    display: none;
+    margin-right: auto;
+    margin-left: auto;
+    border: white;
+    width: 600px;
+    height: 330px;
+}
+
+.Instrucoes button{
+    background-color: #e7e7e7;
+    color: black;
+    padding: 15px 32px;
+    text-align: center;
+    display: block;
+    cursor: pointer;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.Classifcacao{
+    background-color: #008CBA;
+    color: white;
+    display:none;
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+    width: 300px;
+    height:200px;
+    border:white;
+    margin-top: 75px;
+}
+
+.Classifcacao button{
+    background-color: #e7e7e7;
+    color: black;
+    padding: 12px 26px;
+    text-align: center;
+    display: block;
+    cursor: pointer;
+    margin-left:auto;
+    margin-right: auto;
+}
+
+.mensagens{
+    width: 200px;
+    height: 100px;
+    background-color: white;
+    border: solid red;
+    color: red;
+    text-align: center;
+    display:block;
+    position: absolute;
+    z-index: 3;
+    left: 200px;
+    top: 250px;
+    display: none;
+}
+
+.Menu button {
+    background-color: #008CBA;
+    border: 1px solid white;
+    color:white;
+    width: 200px;
+    height: 100px;
+    cursor: pointer;
+    display: none;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 50px;
+}
+
+.Menu button:hover {
+    background-color: lightgreen;
+}
+
+.Escolher{
+    display: none;
+    margin-left: auto;
+    margin-right: auto;
+    width: 500px;
+    height: 500px;
+    text-align: center;
+}
+
+p.tamanho{
+    color:black;
+}
+
+.button2{
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 5px;
+    background-color: black;
+    border: 1px solid white;
+    color: white;
+    padding: 32px 64px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+}
