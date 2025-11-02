@@ -1,7 +1,26 @@
 #fundo{
-    background-color: aqua;
+    background-color: #bfefff;
+    min-height: 100vh;
+    font-family: Arial, Helvetica, sans-serif;
+    padding: 10px;
 }
-
+/* Butões onde vão estar as instruções e classificações */
+.MenuLateral{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+    position: fixed;
+    left: 20px;
+    top: 20px;
+}
+.MenuLateral .logo{
+    width: 80px;
+    height: 80px;
+    background: #eee;
+    border-radius: 4px;
+    margin-right: 8px;
+}
 .MenuLateral button{
     visibility: visible;
     background-color: #008cba;
@@ -13,20 +32,7 @@
     display: none;
 }
 
-.MenuLateral{
-    display: flex;
-}
-
-.Menu1 {
-  display: none;
-  background-color: black;
-  width: 200px;
-  height: 300px;
-  margin-left: auto;
-  margin-right: auto;
-  margin-top: 10px;
-}
-
+/* Login */
 .login{
     background-color: mediumvioletred;
     width: 500px;
@@ -37,14 +43,22 @@
     display: block;
     border: 1px solid black;
     z-index: 1;
+    padding: 16px;
+    box-sizing: border-box;
 }
 
 p.login1 {
     margin-top: 5px;
     margin-bottom: 15px;
-    font-family: Arial, Helvetica, sans-serif;
     font-size: 30px;
     text-align: center;
+    color: white;
+}
+span.psw {
+    color: black;
+    float: left;
+    margin-left: 3px;
+    padding-top: 16px;
 }
 
 input[type=text], [type=password]{
@@ -54,33 +68,78 @@ input[type=text], [type=password]{
     height: 33px;
     width: 300px;
     margin-top: 10px;
+    padding: 4px;
 }
+
+/*Butões*/
 
 .button{
     background-color: blueviolet;
     color: black;
-    padding: 15px 30px;
-    text-align: center;
+    padding: 12px 20px;
     display: block;
     margin-left: auto;
     margin-right: auto;
-    opacity: 0.6;
+    opacity: 0.95;
     font-size: 16px;
     width: 350px;
-    margin-top: 25px;
+    margin-top: 20px;
     border: none;
     border-radius: 8px;
 }
 
-span.psw {
-    color: black;
-    float: left;
-    margin-left: 3px;
-    padding-top: 16px;
+.Menu button {
+    background-color: #008CBA;
+    border: 1px solid white;
+    color:white;
+    width: 200px;
+    height: 60px;
+    cursor: pointer;
+    display: none;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 50px;
 }
-p.int{
+
+.Menu button:hover {
+    background-color: lightgreen;
+}
+
+/*Escolher*/
+.Escolher{
+    display: none;
+    margin-left: auto;
+    margin-right: auto;
+    width: 500px;
+    height: auto;
+    text-align: center;
+    padding: 12px;
+    box-sizing: border-box;
+    background: #fff7;
+    border-radius: 8px;
+}
+
+p.tamanho{
+    color:black;
+}
+
+.button2{
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 5px;
+    background-color: black;
+    border: 1px solid white;
     color: white;
+    padding: 32px 64px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
 }
+
+/*Instruções*/
 .Instrucoes {
     background-color: #008cba;
     display: none;
@@ -101,6 +160,8 @@ p.int{
     margin-left: auto;
     margin-right: auto;
 }
+
+/*Classificações*/
 
 .Classifcacao{
     background-color: #008CBA;
@@ -126,63 +187,98 @@ p.int{
     margin-right: auto;
 }
 
+/*Mensagens*/
 .mensagens{
-    width: 200px;
-    height: 100px;
+    width: 300px;
+    height: auto;
     background-color: white;
-    border: solid red;
-    color: red;
+    border: solid 2px #ff6b6b;
+    color: #222;
     text-align: center;
-    display:block;
-    position: absolute;
-    z-index: 3;
-    left: 200px;
-    top: 250px;
+    display:none;
+    position: fixed;
+    z-index: 20;
+    right: 16px;
+    top: 80px;
+    padding: 8px;
     display: none;
 }
 
-.Menu button {
-    background-color: #008CBA;
-    border: 1px solid white;
-    color:white;
-    width: 200px;
-    height: 100px;
+/*Tabuleiro*/
+
+.boardArea{
+    margin-top: 20px;
+    text-align: center;
+}
+
+.boardControls{
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 12px;
+}
+
+.boardBack{
+    margin: 0 auto;
+    display: grid;
+    gap: 6px;
+    width: fit-content;
+    padding: 12px;
+    background: rgba(0,0,0,0.03);
+    border-radius: 8px;
+}
+
+/* Células */
+
+.cell{
+    width: 64px;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(#fff, #eee);
+    border: 2px solid #3333;
+    font-weight: bold;
     cursor: pointer;
-    display: none;
-    margin-left: auto;
-    margin-right: auto;
-    margin-top: 50px;
+    user-select: none;
+    border-radius: 6px;
+    font-size: 18px;
+    position: relative;
 }
 
-.Menu button:hover {
-    background-color: lightgreen;
+.cell.coord {
+    font-size: 10px;
+    position: absolute;
+    left: 4px;
+    top: 4px;
+    color: #666;
 }
 
-.Escolher{
-    display: none;
-    margin-left: auto;
-    margin-right: auto;
-    width: 500px;
-    height: 500px;
-    text-align: center;
+.cell.player{
+    background: linear-gradient(#b4f7b4,#8ee38e);
+}
+.cell.pc{
+    background: linear-gradient(#ffb3b3,#ff7b7b);
+}
+.cell.empty{
+    background: linear-gradient(#ffffff,#f7f7f7);
+}
+.cell.selectable {
+    box-shadow: 0 0 0 3px rgba(0,150,200,0.18);
+}
+.cell.disabled { opacity: 0.6; cursor: not-allowed; }
+.control { padding: 8px 12px; border-radius: 6px; cursor:pointer; }
+/*cotrolos inferiores*/
+.surrender{
+    display: flex;
+    gap:8px;
+    justify-content: center;
+    margin-top: 12px;
 }
 
-p.tamanho{
-    color:black;
-}
-
-.button2{
-    margin-left: auto;
-    margin-right: auto;
-    margin-top: 5px;
-    background-color: black;
-    border: 1px solid white;
-    color: white;
-    padding: 32px 64px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 16px;
-    margin: 4px 2px;
+.surrender button{
+    padding: 8px 12px;
+    border-radius: 6px;
     cursor: pointer;
 }
