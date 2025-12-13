@@ -8,13 +8,14 @@ let lastRoll = 0;
 let selectedPiece = null;
 let scoreC = 0, scoreP = 0;
 let difficulty = 'medio';
+let updateSource = null;
 
 const cellIndex= (r,c) => r*boardCols + c;
 const coordFromIndex = i => ({r: Math.floor(i/boardCols), c:i % boardCols});
 
 /* Segunda Entrega */
 const SERVER = "http://twserver.alunos.dcc.fc.up.pt:8008";
-const GROUP = "group20";
+const GROUP = "group22";
 let currentNick = null;
 let currentPass = null;
 let currentGame = null;
@@ -105,6 +106,8 @@ async function handleLogin() {
         currentPass = pass;
         currentGame = joinResp.game;
 
+        startUpdateStream();           
+
         mostrarMensagem("Ligado ao servidor. Jogo: " + currentGame, 4);
 
         Menu1();
@@ -115,10 +118,189 @@ async function handleLogin() {
 }
 
 async function rollRemote() {
-    if (!currentNick || !currentPass || )
+    if (!currentNick || !currentPass || !currentGame ){
+        if (typeof rollSticks === "function") {
+            rollSticks();
+        } else{
+            showError("Não há jogo remoto ativo.")
+        }
+        return;
+    }
+
+    try{
+        await twGet("roll", {
+            nick: currentNick,
+            password : currentPass,
+            game: currentGame
+        });
+
+        document.getElementById("rollBtn").disabled = true;
+        mostrarMensagem("Lançamento pedido ao servidor. Aguarda atualização", 4);
+    } catch(err){
+        showError("Erro ao lançar dado: " + err.message);
+    }
 }
 
+async function passTurn() {
+    if (!currentNick || !currentPass || !currentGame) {
+        showError("Não há jogo remoto ativo para passar a vez.");
+        return;
+    }
+
+    try {
+        await twGet("pass", {
+            nick: currentNick,
+            password: currentPass,
+            game: currentGame
+        });
+
+        mostrarMensagem("Passaste a vez. Aguarda atualização do servidor.", 4);
+        document.getElementById("rollBtn").disabled = true;
+    } catch (err) {
+        showError("Erro ao passar a vez: " + err.message);
+    }
 }
+
+async function notifyMove(move) {
+    if (!currentNick || !currentPass || !currentGame) {
+        showError("Não há jogo remoto ativo.");
+        return;
+    }
+
+    try {
+        await twGet("notify", {
+            nick: currentNick,
+            password: currentPass,
+            game: currentGame,
+            move: move
+        });
+
+        mostrarMensagem("Jogada enviada. Aguarda atualização do servidor.", 4);
+    } catch (err) {
+        showError("Erro ao enviar jogada: " + err.message);
+    }
+}
+
+function startUpdateStream() {
+    if (!currentGame || !currentNick) {
+        showError("Não há jogo remoto para atualizar.");
+        return;
+    }
+
+    if (updateSource) {
+        updateSource.close();
+        updateSource = null;
+    }
+
+    const params = new URLSearchParams({
+        game: currentGame,
+        nick: currentNick
+    });
+
+    const url = SERVER + "/update?" + params.toString();
+
+    updateSource = new EventSource(url);
+
+    updateSource.onmessage = function (event) {
+        let data;
+        try {
+            data = JSON.parse(event.data);
+        } catch (e) {
+            console.error("Update inválido: ", event.data);
+            return;
+        }
+
+        handleServerUpdate(data);
+    };
+
+    updateSource.onerror = function () {
+        console.error("Erro na ligação de update.");
+    };
+}
+
+function stopUpdateStream() {
+    if (updateSource) {
+        updateSource.close();
+        updateSource = null;
+    }
+}
+
+function handleServerUpdate(data) {
+    if (data.error) {
+        showError("Erro do servidor: " + data.error);
+        return;
+    }
+
+    if (data.board) {
+        board = data.board;
+        renderBoard();
+    }
+
+    if (typeof data.scoreP === "number") {
+        scoreP = data.scoreP;
+        document.getElementById("scoreP").textContent = scoreP;
+    }
+
+    if (typeof data.scoreC === "number") {
+        scoreC = data.scoreC;
+        document.getElementById("scoreC").textContent = scoreC;
+    }
+
+    if (typeof data.lastRoll === "number") {
+        lastRoll = data.lastRoll;
+        document.getElementById("rollBtn").disabled = false;
+        document.getElementById("rollResult").textContent = lastRoll;
+    }
+
+    if (data.turn) {
+        turn = data.turn;
+        updateTurnLabel();
+    }
+
+    if (data.winner) {
+        mostrarMensagem("Jogo terminado. Vencedor: " + data.winner, 6);
+        finishGame(data.winner);
+        stopUpdateStream();
+    }
+}
+
+async function getRanking(size){
+    try{
+        const data = await twGet("ranking", {
+            group : GROUP,
+            size : size
+        });
+
+        renderRanking(data.ranking || []);
+    } catch (err) {
+        showError("Erro ao obter ranking: " + err.message);
+    }
+}
+
+function renderRanking(list) {
+    const box = document.querySelector('.Classifcacao');
+    if (!box) return;
+
+    box.innerHTML = "<br><p class='int'><strong>Ranking</strong></p>";
+
+    if (!list.length) {
+        box.innerHTML += "<p class='int'>Ainda não há jogos registados.</p>";
+        return;
+    }
+
+    list.forEach((item, idx) => {
+        const line = document.createElement('p');
+        line.className = 'int';
+        line.textContent = (idx + 1) + ". " + item.nick + " - " + item.victories + " vitórias";
+        box.appendChild(line);
+    });
+
+    const btn = document.createElement('button');
+    btn.textContent = "Close";
+    btn.onclick = FecharClasf;
+    box.appendChild(btn);
+}
+
 
 function Instrucoes() {
     document.getElementsByClassName("Instrucoes")[0].style.display = "block";
@@ -130,7 +312,18 @@ function FecharInsts(){
 
 function Classifcacao() {
     document.getElementsByClassName("Classifcacao")[0].style.display = "block";
+
+    const cols = document.getElementById("cols")
+        ? parseInt(document.getElementById("cols").value, 10)
+        : 7;
+    const rows = document.getElementById("rows")
+        ? parseInt(document.getElementById("rows").value, 10)
+        : 4;
+    const sizeStr = rows + "x" + cols;   
+
+    getRanking(sizeStr);
 }
+
 
 function FecharClasf() {
     document.getElementsByClassName("Classifcacao")[0].style.display = "none";
@@ -281,33 +474,37 @@ function canMovePiece(idx, step, player){
     }
 }
 
-function onCellClick(idx){
-    if(game !== 1) return;
-    if(turn === 'P'){
-        if(lastRoll <= 0){
+function onCellClick(idx) {
+    if (game !== 1) return;
+
+    if (turn === 'P') {
+        if (lastRoll <= 0) {
             mostrarMensagem('Primeiro clica em "Lançar (1-4)".');
             return;
         }
-        if(board[idx] !== 'P'){
+        if (board[idx] !== 'P') {
             mostrarMensagem('Escolhe uma das tuas peças (verde).');
             return;
         }
-        if(!canMovePiece(idx, lastRoll, 'P')){
+        if (!canMovePiece(idx, lastRoll, 'P')) {
             mostrarMensagem('Essa peça não pode mover com o valor lançado.');
             return;
         }
-        moverPeca(idx, lastRoll, 'P');
-        lastRoll = 0;
-        document.getElementById('rollResult').textContent = '—';
+
+        const moveStr = String(idx);
+        notifyMove(moveStr);
+
         clearSelectable();
-        if(checkEnd()) return;
-        turn = 'C';
-        updateTurnLabel();
-        setTimeout(() => iaTurn(), 600);
+        document.getElementById('rollResult').textContent = '—';
+        lastRoll = 0;
+        mostrarMensagem('Jogada enviada. Aguarda resposta do servidor.', 4);
     } else {
-        mostrarMensagem('Aguarda a jogada da IA.');
+        mostrarMensagem('Não é a tua vez.');
     }
 }
+
+
+
 function moverPeca(idx, step, player){
     const pos = coordFromIndex(idx);
     if(player === 'P'){
@@ -415,7 +612,6 @@ function iaTurn(){
 
 /*Fim do Jogo*/
 function checkEnd(){
-    // se todas as peças P removidas => IA vence
     const piecesP = board.filter(x => x === 'P').length;
     const piecesC = board.filter(x => x === 'C').length;
     if(piecesP === 0){
@@ -428,7 +624,6 @@ function checkEnd(){
         finishGame('P');
         return true;
     }
-    // alternativa por pontos (se um jogador tiver pontos = cols, por ex.)
     if(scoreP >= boardCols){
         mostrarMensagem('Ganhaste por pontuação!');
         finishGame('P');
@@ -442,12 +637,19 @@ function checkEnd(){
     return false;
 }
 
-function finishGame(winner){
+function finishGame(winner) {
+    stopUpdateStream(); 
+
     game = 2;
-    document.querySelectorAll('#boardBack .cell').forEach(c => c.classList.add('disabled'));
-    document.getElementById('turnLabel').textContent = `Fim — ${winner}`;
+    document.querySelectorAll('#boardBack .cell')
+        .forEach(c => c.classList.add('disabled'));
+
+    const t = "Fim - " + (winner || "");
+    document.getElementById('turnLabel').textContent = t;
+
     document.getElementById('rollBtn').disabled = true;
 }
+
 /*Auxiliares*/
 async function desistir(){
     if (!currentNick || !currentGame || !currentPass){
@@ -465,6 +667,7 @@ async function desistir(){
 
         mostrarMensagem("Saíste do jogo. Vitória do adversário.", 4);
         currentGame = null;
+        stopUpdateStream();
         finishGame("C");
     } catch(err){
         showError("Erro ao sair do jogo: " + err.message);

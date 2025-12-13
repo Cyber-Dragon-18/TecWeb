@@ -34,7 +34,7 @@
 
 /* Login */
 .login{
-    background-color: mediumvioletred;
+    background-color: rgb(7, 86, 233);
     width: 500px;
     height: 300px;
     margin-top: 20px;
@@ -74,7 +74,7 @@ input[type=text], [type=password]{
 /*Butões*/
 
 .button{
-    background-color: blueviolet;
+    background-color: rgb(5, 197, 245);
     color: black;
     padding: 12px 20px;
     display: block;
