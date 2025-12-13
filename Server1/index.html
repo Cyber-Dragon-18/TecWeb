@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="PT">
+    <head>
+        <link rel="stylesheet" href="style.css">
+        <meta charset=UTF-8>
+        <title>Jogo do Tâb - TW</title>
+    </head>
+    <body id="fundo">
+
+        <div class="MenuLateral">
+            <img src ="logo.png" alt="logo" class="logo"/>
+            <button onclick="Instrucoes()">Instruções</button>
+            <button onclick="Classifcacao()">Classificações</button>
+            <button onclick="Home()">Home</button>
+        </div>
+
+        <div class="login">
+            <p class="login1">Sign in</p>
+
+            <input id ="inputUser" type="text" placeholder="Nome de Utilizador" value="nome" name="uname" required>
+            <input id ="inputPass" type="password" placeholder="Inserir Password" name="psw" required>
+
+            <button class="button" onclick="handleLogin()">Login</button>
+            <span class="psw">Forgot <a href="#">password?</a></span>
+        </div>
+
+        <div class="Menu">
+            <button id="btnPvC" onclick="Escolhe()">PLAYER VS PC</button>
+            <button id="btnPvP" onclick="">PLAYER VS PLAYER</button>
+        </div>
+
+        <div class="Escolher">
+            <p class="tamanho">Colunas do tabuleiro: 
+                <span id="colsLabel">7</span> — Linhas: <span id="rowsLabel">4</span>
+            </p>
+            <input type="range" id="cols" min="5" max="9" value="7" oninput="updateBoardLabels()">
+            <input type="range" id="rows" min="3" max="6" value="4" oninput="updateBoardLabels()">
+
+            <p class="tamanho">Escolhe a dificuldade</p>
+            <input type="radio" id="facil" name="level" value="facil">
+            <label for="facil">Fácil</label>
+
+            <input type="radio" id="medio" name="level" value="medio" checked="checked"/>
+            <label for="medio">Médio</label>
+
+            <input type="radio" id="dificil" name="level" value="dificil"/>
+            <label for="dificil">Difícil</label><br>
+
+            <button class="button2" onclick="play1()">Play!</button>
+        </div>
+
+        <div class="Instrucoes">
+            <h3>Instruções (versão clássica simplificada)</h3>
+            <ul>
+                <li>Tabuleiro com N linhas × M colunas; por defeito 4×7.</li>
+                <li>O Jogador (P) começa com peças na linha inferior; a IA (C) na linha superior.</li>
+                <li>A cada turno, o jogador lança (botão) e obtém 1–4 (simulação de lançamentos tradicionais).</li>
+                <li>Escolhe uma peça própria e avança nesse número de linhas em direção à base adversária.</li>
+                <li>Se pousar numa peça adversária, captura-a (remove-a). Se o destino estiver ocupado por peça própria, jogada inválida.</li>
+                <li>Se um movimento ultrapassar a linha adversária, a peça sai do tabuleiro (pontua).</li>
+                <li>Ganha quem eliminar todas as peças adversárias ou fizer todas as suas peças saírem (configurável).</li>
+            </ul>
+            <button onclick="FecharInsts()">Close</button>
+        </div>
+        <div class="Classifcacao">
+            <br><p class="int">Rodrigo: 50 pontos</p>
+            <p class="int">Catarina: 40 pontos</p>
+            <p class="int">Gonçalo: 30 pontos</p>
+            <button onclick="FecharClasf()">Close</button>
+        </div>
+        <div class="mensagens" id ="mensagens"></div>
+        
+        <div class="logout" style="display: none;">
+            <button onclick="Logout()">Logout</button>
+        </div>
+
+        <div class="surrender" style="display: none;">
+            <button onclick="desistir()">Desistir</button>
+            <button onclick="reiniciar()">Reiniciar</button>
+        </div>
+
+
+        <div id="boardArea" style="display: none;">
+            <div class="boardControls">
+                <div>
+                    <button id="rollBtn" onclick="rollSticks()" class="control">Lançar (1-4)</button>
+                    <span id="rollResult">—</span>
+                </div>
+                <div>
+                    <span>Turno: <strong id="turnLabel">—</strong></span>
+                    <span> | Pontos P: <strong id="scoreP">0</strong></span>
+                    <span> | Pontos C: <strong id="scoreC">0</strong></span>
+                </div>
+            </div>
+
+            <div id="boardBack" class="boardBack"></div>
+
+            <div class="surrender" style="display:flex;">
+                <button onclick="desistir()">Desistir</button>
+                <button onclick="reiniciar()">Reiniciar</button>
+            </div>
+        </div>
+
+
+
+        <script src="java.js"></script>
+    </body>
+</html>
