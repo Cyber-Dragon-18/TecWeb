@@ -264,6 +264,12 @@ p.tamanho{
 .cell.empty{
     background: linear-gradient(#ffffff,#f7f7f7);
 }
+.cell.last-move {
+    box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.8);
+}
+.cell.selected-cell {
+    box-shadow: 0 0 0 3px rgba(0, 150, 255, 0.8);
+}
 .cell.selectable {
     box-shadow: 0 0 0 3px rgba(0,150,200,0.18);
 }

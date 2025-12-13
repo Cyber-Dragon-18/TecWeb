@@ -9,9 +9,39 @@ let selectedPiece = null;
 let scoreC = 0, scoreP = 0;
 let difficulty = 'medio';
 let updateSource = null;
+let myColor = null;
 
 const cellIndex= (r,c) => r*boardCols + c;
 const coordFromIndex = i => ({r: Math.floor(i/boardCols), c:i % boardCols});
+
+function loadLocalScores() {
+    try {
+        const raw = localStorage.getItem("tb-scores");
+        return raw ? JSON.parse(raw) : [];
+    } catch {
+        return [];
+    }
+}
+
+function saveLocalScores(scores) {
+    localStorage.setItem("tb-scores", JSON.stringify(scores));
+}
+
+function updateLocalScore(winner) {
+    const nick = currentNick || "Jogador";
+    const scores = loadLocalScores();
+
+    let entry = scores.find(s => s.nick === nick);
+    if (!entry) {
+        entry = { nick: nick, games: 0, victories: 0 };
+        scores.push(entry);
+    }
+    entry.games += 1;
+    if (winner === 'P') entry.victories += 1;
+
+    saveLocalScores(scores);
+}
+
 
 /* Segunda Entrega */
 const SERVER = "http://twserver.alunos.dcc.fc.up.pt:8008";
@@ -226,16 +256,36 @@ function stopUpdateStream() {
 }
 
 function handleServerUpdate(data) {
+    // 1) erros do servidor
     if (data.error) {
         showError("Erro do servidor: " + data.error);
         return;
     }
 
-    if (data.board) {
-        board = data.board;
+ 
+    if (data.players) {
+        myColor = null;
+        Object.entries(data.players).forEach(([nick, color]) => {
+            if (nick === currentNick) {
+                myColor = color;   
+            }
+        });
+    }
+
+    
+    if (Array.isArray(data.pieces)) {
+        board = data.pieces.map(cell => {
+            if (!cell) return null;
+            if (myColor) {
+                const isMine = (cell.color === myColor);
+                return isMine ? "P" : "C";
+            }
+            return cell.color === "Blue" ? "P" : "C";
+        });
         renderBoard();
     }
 
+    // 3) pontuações
     if (typeof data.scoreP === "number") {
         scoreP = data.scoreP;
         document.getElementById("scoreP").textContent = scoreP;
@@ -246,29 +296,106 @@ function handleServerUpdate(data) {
         document.getElementById("scoreC").textContent = scoreC;
     }
 
-    if (typeof data.lastRoll === "number") {
-        lastRoll = data.lastRoll;
-        document.getElementById("rollBtn").disabled = false;
-        document.getElementById("rollResult").textContent = lastRoll;
+    // 4) dado de paus (dice)
+    if (data.dice !== undefined) {
+        if (data.dice === null) {
+            lastRoll = 0;
+            document.getElementById("rollResult").textContent = "—";
+            document.getElementById("rollBtn").disabled = false;
+            desenharDado(null);               // limpa o canvas
+        } else {
+            lastRoll = data.dice.value;
+            document.getElementById("rollResult").textContent = lastRoll;
+            document.getElementById("rollBtn").disabled = !data.dice.keepPlaying;
+            desenharDado(data.dice);          // desenha o dado recebido
+        }
     }
 
-    if (data.turn) {
-        turn = data.turn;
+    // 5) obrigação de passar a vez (mustPass)
+    if (typeof data.mustPass === "boolean") {
+        const passBtn = document.getElementById("passBtn");
+        if (passBtn) {
+            passBtn.disabled = !data.mustPass;
+        }
+    }
+
+    // 6) jogador inicial (initial)
+    if (data.initial) {
+        const initialPlayer = data.initial;
+        if (initialPlayer === currentNick) {
+            mostrarMensagem("Começas o jogo!", 4);
+        } else {
+            mostrarMensagem("O adversário começa o jogo.", 4);
+        }
+    }
+
+    if (Array.isArray(data.selected)) {
+            const cells = document.querySelectorAll("#boardBack .cell");
+            cells.forEach(c => c.classList.remove("selected-cell"));
+
+            data.selected.forEach(idx => {
+                if (cells[idx]) {
+                    cells[idx].classList.add("selected-cell");
+                }
+            });
+        }
+
+    if (data.step) {
+        const msgByStep = {
+            from: "Escolhe a peça a mover.",
+            to:   "Escolhe a casa de destino.",
+            take: "Escolhe a peça do adversário a capturar."
+        };
+        if (msgByStep[data.step]) {
+            mostrarMensagem(msgByStep[data.step], 4);
+        }
+    }
+
+    // 7) última casa mexida (cell)
+    if (data.cell) {
+        const sq = data.cell.square; 
+        const cells = document.querySelectorAll("#boardBack .cell");
+        cells.forEach(c => c.classList.remove("last-move"));
+        if (cells[sq]) {
+            cells[sq].classList.add("last-move");
+        }
+    }
+
+if (data.turn) {
+        const nickTurn = data.turn;           // string com nick
+        // se fores tu, considera turno 'P', senão 'C'
+        if (nickTurn === currentNick) {
+            turn = 'P';
+        } else {
+            turn = 'C';
+        }
         updateTurnLabel();
     }
 
-    if (data.winner) {
-        mostrarMensagem("Jogo terminado. Vencedor: " + data.winner, 6);
+    // vencedor do jogo [image:1]
+    if (data.winner !== undefined) {
+        if (data.winner !== null) {
+            // data.winner é o nick do vencedor
+            const msg = (data.winner === currentNick)
+                ? "Ganhaste este jogo!"
+                : "Perdeste. Vencedor: " + data.winner;
+            mostrarMensagem(msg, 6);
+        } else {
+            // jogo terminou sem vencedor (por ex., alguém saiu antes de emparelhar)
+            mostrarMensagem("Jogo terminado sem vencedor.", 4);
+        }
         finishGame(data.winner);
         stopUpdateStream();
     }
 }
 
-async function getRanking(size){
-    try{
+
+
+async function getRanking(size) {
+    try {
         const data = await twGet("ranking", {
-            group : GROUP,
-            size : size
+            group: GROUP,
+            size: size
         });
 
         renderRanking(data.ranking || []);
@@ -291,7 +418,10 @@ function renderRanking(list) {
     list.forEach((item, idx) => {
         const line = document.createElement('p');
         line.className = 'int';
-        line.textContent = (idx + 1) + ". " + item.nick + " - " + item.victories + " vitórias";
+        line.textContent =
+            (idx + 1) + ". " + item.nick +
+            " — " + item.victories + " vitórias em " +
+            item.games + " jogos";
         box.appendChild(line);
     });
 
@@ -300,6 +430,35 @@ function renderRanking(list) {
     btn.onclick = FecharClasf;
     box.appendChild(btn);
 }
+
+function renderLocalScores(box) {
+    const scores = loadLocalScores();
+    const title = document.createElement('p');
+    title.className = 'int';
+    title.textContent = "Classificação local (PvC)";
+    box.appendChild(title);
+
+    if (!scores.length) {
+        const line = document.createElement('p');
+        line.className = 'int';
+        line.textContent = "Ainda não há jogos locais registados.";
+        box.appendChild(line);
+        return;
+    }
+
+    scores
+        .sort((a, b) => b.victories - a.victories)
+        .forEach((s, idx) => {
+            const line = document.createElement('p');
+            line.className = 'int';
+            line.textContent =
+                (idx + 1) + ". " + s.nick +
+                " — " + s.victories + " vitórias em " +
+                s.games + " jogos (local)";
+            box.appendChild(line);
+        });
+}
+
 
 
 function Instrucoes() {
@@ -319,10 +478,11 @@ function Classifcacao() {
     const rows = document.getElementById("rows")
         ? parseInt(document.getElementById("rows").value, 10)
         : 4;
-    const sizeStr = rows + "x" + cols;   
+    const sizeStr = rows + "x" + cols;
 
     getRanking(sizeStr);
 }
+
 
 
 function FecharClasf() {
@@ -639,6 +799,9 @@ function checkEnd(){
 
 function finishGame(winner) {
     stopUpdateStream(); 
+    if (!currentGame && (winner === 'P' || winner === 'C')) {
+        updateLocalScore(winner);
+    }
 
     game = 2;
     document.querySelectorAll('#boardBack .cell')
@@ -708,4 +871,47 @@ function mostrarMensagem(text, seconds=4){
     if(seconds > 0){
         setTimeout(() => { mensagensDiv.style.display = 'none'; }, seconds*1000);
     }
+}
+
+/*  Desenhar Dados */
+function desenharDado(dice) {
+    const canvas = document.getElementById("diceCanvas");
+    if (!canvas || !canvas.getContext) return;
+    const ctx = canvas.getContext("2d");
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    if (!dice) {
+        return;
+    }
+
+    const w = canvas.width;
+    const h = canvas.height;
+
+    ctx.fillStyle = "#f9f9f9";
+    ctx.strokeStyle = "#333";
+    ctx.lineWidth = 2;
+    ctx.fillRect(5, 5, w - 10, h - 10);
+    ctx.strokeRect(5, 5, w - 10, h - 10);
+
+    const stickCount = dice.stickValues ? dice.stickValues.length : 4;
+    const stickWidth = (w - 20) / stickCount;
+    const stickHeight = h - 20;
+
+    for (let i = 0; i < stickCount; i++) {
+        const x = 10 + i * stickWidth + 4;
+        const y = 10;
+        const inner = dice.stickValues && dice.stickValues[i];
+
+        ctx.fillStyle = inner ? "#ddd" : "#444"; 
+        ctx.beginPath();
+        ctx.roundRect(x, y, stickWidth - 8, stickHeight, 8);
+        ctx.fill();
+    }
+
+    ctx.fillStyle = "#000";
+    ctx.font = "bold 20px Arial";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText(dice.value, w / 2, h / 2);
 }

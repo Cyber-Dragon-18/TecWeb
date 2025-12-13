@@ -83,9 +83,10 @@
         <div id="boardArea" style="display: none;">
             <div class="boardControls">
                 <div>
-                    <button id="rollBtn" onclick="rollRemote()" class="control">Lançar (1-4)</button>
-                    <button onclick="passTurn()" class="control">Passar a vez</button>
-                    <span id="rollResult">—</span>
+                <button id="rollBtn" onclick="rollRemote()" class="control">Lançar 1-4</button>
+                <button id="passBtn" onclick="passTurn()" class="control">Passar vez</button>
+                <span>Resultado: <strong id="rollResult">—</strong></span>
+                <canvas id="diceCanvas" width="120" height="60"></canvas>
                 </div>
                 <div>
                     <span>Turno: <strong id="turnLabel">—</strong></span>
