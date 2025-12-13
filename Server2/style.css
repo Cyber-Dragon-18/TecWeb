@@ -1,0 +1,290 @@
+#fundo{
+    background-color: #bfefff;
+    min-height: 100vh;
+    font-family: Arial, Helvetica, sans-serif;
+    padding: 10px;
+}
+/* Butões onde vão estar as instruções e classificações */
+.MenuLateral{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+    position: fixed;
+    left: 20px;
+    top: 20px;
+}
+.MenuLateral .logo{
+    width: 80px;
+    height: 80px;
+    background: #eee;
+    border-radius: 4px;
+    margin-right: 8px;
+}
+.MenuLateral button{
+    visibility: visible;
+    background-color: #008cba;
+    border : 1px solid white;
+    color: white;
+    width: 150px;
+    height: 75px;
+    cursor: pointer;
+    display: none;
+}
+
+/* Login */
+.login{
+    background-color: mediumvioletred;
+    width: 500px;
+    height: 300px;
+    margin-top: 20px;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+    border: 1px solid black;
+    z-index: 1;
+    padding: 16px;
+    box-sizing: border-box;
+}
+
+p.login1 {
+    margin-top: 5px;
+    margin-bottom: 15px;
+    font-size: 30px;
+    text-align: center;
+    color: white;
+}
+span.psw {
+    color: black;
+    float: left;
+    margin-left: 3px;
+    padding-top: 16px;
+}
+
+input[type=text], [type=password]{
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    height: 33px;
+    width: 300px;
+    margin-top: 10px;
+    padding: 4px;
+}
+
+/*Butões*/
+
+.button{
+    background-color: blueviolet;
+    color: black;
+    padding: 12px 20px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    opacity: 0.95;
+    font-size: 16px;
+    width: 350px;
+    margin-top: 20px;
+    border: none;
+    border-radius: 8px;
+}
+
+.Menu button {
+    background-color: #008CBA;
+    border: 1px solid white;
+    color:white;
+    width: 200px;
+    height: 60px;
+    cursor: pointer;
+    display: none;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 50px;
+}
+
+.Menu button:hover {
+    background-color: lightgreen;
+}
+
+/*Escolher*/
+.Escolher{
+    display: none;
+    margin-left: auto;
+    margin-right: auto;
+    width: 500px;
+    height: auto;
+    text-align: center;
+    padding: 12px;
+    box-sizing: border-box;
+    background: #fff7;
+    border-radius: 8px;
+}
+
+p.tamanho{
+    color:black;
+}
+
+.button2{
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 5px;
+    background-color: black;
+    border: 1px solid white;
+    color: white;
+    padding: 32px 64px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+}
+
+/*Instruções*/
+.Instrucoes {
+    background-color: #008cba;
+    display: none;
+    margin-right: auto;
+    margin-left: auto;
+    border: white;
+    width: 600px;
+    height: 330px;
+}
+
+.Instrucoes button{
+    background-color: #e7e7e7;
+    color: black;
+    padding: 15px 32px;
+    text-align: center;
+    display: block;
+    cursor: pointer;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/*Classificações*/
+
+.Classifcacao{
+    background-color: #008CBA;
+    color: white;
+    display:none;
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+    width: 300px;
+    height:200px;
+    border:white;
+    margin-top: 75px;
+}
+
+.Classifcacao button{
+    background-color: #e7e7e7;
+    color: black;
+    padding: 12px 26px;
+    text-align: center;
+    display: block;
+    cursor: pointer;
+    margin-left:auto;
+    margin-right: auto;
+}
+
+/*Mensagens*/
+.mensagens{
+    width: 300px;
+    height: auto;
+    background-color: white;
+    border: solid 2px #ff6b6b;
+    color: #222;
+    text-align: center;
+    display:none;
+    position: fixed;
+    z-index: 20;
+    right: 16px;
+    top: 80px;
+    padding: 8px;
+    display: none;
+}
+
+/*Tabuleiro*/
+
+.boardArea{
+    margin-top: 20px;
+    text-align: center;
+}
+
+.boardControls{
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 12px;
+}
+
+.boardBack{
+    margin: 0 auto;
+    display: grid;
+    gap: 6px;
+    width: fit-content;
+    padding: 12px;
+    background: rgba(0,0,0,0.03);
+    border-radius: 8px;
+}
+
+/* Células */
+
+.cell{
+    width: 64px;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(#fff, #eee);
+    border: 2px solid #3333;
+    font-weight: bold;
+    cursor: pointer;
+    user-select: none;
+    border-radius: 6px;
+    font-size: 18px;
+    position: relative;
+}
+
+.cell.coord {
+    font-size: 10px;
+    position: absolute;
+    left: 4px;
+    top: 4px;
+    color: #666;
+}
+
+.cell.player{
+    background: linear-gradient(#b4f7b4,#8ee38e);
+}
+.cell.pc{
+    background: linear-gradient(#ffb3b3,#ff7b7b);
+}
+.cell.empty{
+    background: linear-gradient(#ffffff,#f7f7f7);
+}
+.cell.last-move {
+    box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.8);
+}
+.cell.selected-cell {
+    box-shadow: 0 0 0 3px rgba(0, 150, 255, 0.8);
+}
+.cell.selectable {
+    box-shadow: 0 0 0 3px rgba(0,150,200,0.18);
+}
+.cell.disabled { opacity: 0.6; cursor: not-allowed; }
+.control { padding: 8px 12px; border-radius: 6px; cursor:pointer; }
+/*cotrolos inferiores*/
+.surrender{
+    display: flex;
+    gap:8px;
+    justify-content: center;
+    margin-top: 12px;
+}
+
+.surrender button{
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+}
